@@ -1,23 +1,63 @@
-/* DONE: make it look awesome. */
-/* DONE: make it responsive. */
+:root {
+  /* UVU Colors */
+  --uvu-green: #275d38;
+  --uvu-green-l3: #6f937a;
+  --uvu-green-l2: #578164;
+  --uvu-green-l1: #3f6f4e;
+  --uvu-green-d1: #235332;
+  --uvu-green-d2: #1e482c;
+  --black: #000000;
+  --white: #ffffff;
+  --silver: #8e8c89;
+  --grey: #e8e8e8;
+  --light-grey: #f9f9f9;
+
+  --bg-primary: var(--light-grey);
+  --bg-secondary: var(--grey);
+  --text-primary: var(--black);
+}
 
 * {
   box-sizing: border-box;
-  font-family: system-ui, sans-serif;
+  font-family: 'Rajdhani', system-ui, sans-serif;
 }
 
 body {
-  background-color: #f7f7f7;
+  background-color: var(--bg-secondary);
   margin: 0;
-  padding: 1rem;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+.uvu-header {
+  background-color: var(--uvu-green);
+  color: var(--white);
+  padding: 1rem 2rem;
+  display:flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.uvu-logo {
+  height: 50px;
+  width: auto;
+}
+
+.uvu-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
 }
 
 form {
-  background: #ffffff;
-  padding: 1rem;
-  border-radius: 9px;
+  background: var(--bg-primary);
+  padding: 2rem;
+  border-radius: 8px;
   max-width: 850px;
-  margin: 0 auto;
+  margin: 2rem auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-top: 3px solid var(--uvu-green-l3);
 }
 
 select,
@@ -25,16 +65,62 @@ input,
 textarea,
 button {
   width: 100%;
-  padding: 0.6rem;
-  margin-top: 0.4rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
   margin-bottom: 1rem;
   font-size: 1rem;
+  border: 1px solid var(--uvu-green-d2);
+  border-radius: 4px;
+  font-family: 'Rajdhani', system-ui, sans-serif;
+}
+
+select:focus,
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--silver);
+  box-shadow: 0 0 0 3px rgba(0, 138, 64, 0.1);
+}
+
+button {
+  background-color: var(--uvu-green-l1);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--uvu-green);
+}
+
+button:disabled {
+  background-color: var(--bg-secondary);
+  cursor: not-allowed;
+}
+
+label {
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 0.25rem;
 }
 
 .new-log {
-  padding: 1rem;
-  border-radius: 2%;
-  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: var(--white);
+  border-left: 3px solid var(--uvu-green-l3);
+}
+
+#student-logs h3 {
+  color: var(--uvu-green-d2);
+  border-bottom: 2px solid var(--uvu-green-d2);
+  padding-bottom: 0.5rem;
+  font-weight: 600;
 }
 
 #student-logs ul {
@@ -44,9 +130,17 @@ button {
 }
 
 #student-logs li {
-  padding: 0.75rem;
-  margin-bottom: 0.75;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
   border-radius: 4px;
+  background-color: var(--white);
+  border-left: 3px solid var(--uvu-green-l3);
+  transition: all 0.2s ease;
+}
+
+#student-logs li:hover {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transform: translateX(4px);
 }
 
 .hidden {
@@ -57,13 +151,37 @@ button {
   cursor: pointer;
 }
 
+.log small {
+  color: var(--silver);
+  font-weight: 500;
+}
+
 pre {
   white-space: pre-wrap;
   word-break: break-word;
+  margin: 0.5rem 0 0 0;
+  font-family: 'Rajdhani', system-ui, sans-serif;
 }
 
 @media (max-width: 480px) {
   body {
     font-size: 17px;
+  }
+
+  .uvu-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .uvu-logo {
+    height: 40px;
+  }
+  
+  .uvu-header h1 {
+    font-size: 1.4rem;
+  }
+  
+  form {
+    padding: 1.5rem;
+    margin: 1rem;
   }
 }
