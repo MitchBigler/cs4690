@@ -1,0 +1,69 @@
+/* DONE: make it look awesome. */
+/* DONE: make it responsive. */
+
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  background-color: #f7f7f7;
+  margin: 0;
+  padding: 1rem;
+}
+
+form {
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 9px;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+select,
+input,
+textarea,
+button {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.4rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.new-log {
+  padding: 1rem;
+  border-radius: 2%;
+  background-color: #f9f9f9;
+}
+
+#student-logs ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#student-logs li {
+  padding: 0.75rem;
+  margin-bottom: 0.75;
+  border-radius: 4px;
+}
+
+.hidden {
+  display: none;
+}
+
+.log {
+  cursor: pointer;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 17px;
+  }
+}

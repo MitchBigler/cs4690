@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <title>Student Logs</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico"/>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <body>
+    <form>
+      <select
+        aria-label="Select Course"
+        id="course"
+        name="course"
+        data-cy="course_select"
+      ></select
+      ><br />
+
+      <div id="id-entry" class="hidden">
+        <label for="uvuId">UVU ID</label><br />
+        <input
+          type="text"
+          id="uvuId"
+          name="uvuId"
+          data-cy="uvuId_input"
+          placeholder="10234567"
+          maxlength="8"
+          pattern="\d{8}"
+          inputmode="numeric"
+        />
+      </div>
+
+      <div id="student-logs" class="hidden">
+        <h3 id="uvuIdDisplay" data-cy="uvuIdDisplay">
+          Student Logs for 10234567
+        </h3>
+        <ul id="logs-list" data-cy="logs"></ul>
+
+        <div class="new-log">
+          <label>New Log</label><br />
+          <textarea
+            id="new-log-text"
+            style="height: 75px"
+            aria-label="add log textarea"
+            data-cy="log_textarea"
+          ></textarea
+          ><br />
+
+          <button type="submit" id="add-log-btn" data-cy="add_log_btn" disabled>
+            Add Log
+          </button>
+        <div>
+      </div>
+    </form>
+
+    <script src="/js/script.js"></script>
+  </body>
+</html>
+
+<!-- DONE: move all TODOs that done above to down below here and change the label to DONE:. -->
+
+<!-- DONE: set the lang attribute to American English -->
+<!-- DONE: set the characterset to utf8 -->
+<!-- DONE: temporarily use stackoverflow's favicon. "https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico"-->
+<!-- DONE: Load the CSS file -->
+
+<!-- DONE: The following options are currently static values to show you sample data.  -->
+<!-- AJAX to replace them with dynamic data from GET https://json-server-ft3qa5--3000.local.webcontainer.io/api/v1/courses -->
+<!-- NOTE: all AJAX in this project is via fetch-->
+<!-- Use your own unique URL you recorded, not the sample one above. -->
+
+<!-- DONE: Don't show the uvu id text input box until a course was selected above. -->
+<!-- DONE: If course ever becomes unselected, don't show the uvu id text input box.-->
+
+<!-- DONE: The following options are currently static values to show you an example.  -->
+<!-- You must replace them with dynamic data by ajaxing GET https://json-server-ft3qa5--3000.local.webcontainer.io/logs?courseId=<courseID>&uvuId=<uvuID> -->
+
+<!-- DONE: write `10234567` as sample data on the input field below  -->
+<!-- DONE: Ensure the character length never exceeds 8 -->
+<!-- DONE: Only numbers, no letters or other characters-->
+<!-- DONE: When character length reaches 8 and it's only digits, fire off ajax request, if 200 or 304, display results, else appropriately guide the user. -->
+
+<!-- DONE: Click anywhere on the log to toggle visibility of the log (text only, not the date) -->
+
+<!-- DONE: Button should be disabled until the logs, if any, are displayed and there's text in the textarea -->
+
+<!-- DONE: Button should AJAX POST the textarea value to json-server which will store it * must include content-type -->
+
+<!-- DONE: Load the JS file -->
+
+<!-- DONE: add appropriate comments you feel are necessary, if any, for the next coder to understand -->
