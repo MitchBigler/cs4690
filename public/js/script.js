@@ -1,15 +1,7 @@
-// TODO: Wire up the app's behavior here.
-// NOTE: The TODOs are listed in index.html
-
-// TODO: The following options are currently static values to show you sample data.
-// AJAX to replace them with dynamic data from GET https://json-server-ft3qa5--3000.local.webcontainer.io/api/v1/courses
-// NOTE: all AJAX in this project is via fetch
-// <!-- Use your own unique URL you recorded, not the sample one above.
-
 //* Loads courses from api to course select dropdown
 async function LoadCourses() {
-  const response = await window.fetch('/api/v2/courses');
-  const courses = await response.json();
+  const response = await axios.get('/api/v2/courses');
+  const courses = response.data;
 
   const courseSelect = document.getElementById('course');
 
@@ -22,19 +14,18 @@ async function LoadCourses() {
   courseSelect.innerHTML = optionsHTML;
 }
 
-//* Fetch request and update logs
+//* get and update logs
 async function LoadLogs(courseId, uvuId) {
   const logsList = document.getElementById('logs-list');
   logsList.innerHTML = '';
 
-  // fire ajax GET
+  // fire GET
   try {
-    const response = await fetch(
+    const response = await axios.get(
       `/api/v1/logs?courseId=${courseId}&uvuId=${uvuId}`
     );
 
-    if (response.status === 200 || response.status === 304) {
-      const logs = await response.json();
+      const logs = response.data
 
       if (logs.length === 0) {
         logsList.innerHTML = 'No logs found for that UVU ID in this course.';
@@ -43,11 +34,12 @@ async function LoadLogs(courseId, uvuId) {
       for (const log of logs) {
         logsList.innerHTML += `<li class="log"><div><small>${log.date}</small></div><pre><p class="log-text">${log.text}</p></pre></li>`;
       }
-    } else {
-      logsList.innerHTML = 'No logs found for that id.';
-    }
   } catch (err) {
+    if (err.response) {
+      logsList.innerHTML = 'No logs found for that id.';
+    } else {
     logsList.innerHTML = 'Error. Try again later.';
+    }
   }
 }
 
@@ -127,21 +119,17 @@ function setupLogs() {
 
     const text = newLogText.value.trim();
 
-    // fire ajax POST
+    // fire POST
     try {
-      const response = await fetch(`/api/v1/logs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: crypto.randomUUID(),
-          courseId: courseDropDown.value,
-          uvuId: idInput.value,
-          text: newLogText.value,
-          date: new Date().toLocaleString(),
-        }),
+      const response = await axios.post(`/api/v1/logs`, {
+        id: crypto.randomUUID(),
+        courseId: courseDropDown.value,
+        uvuId: idInput.value,
+        text: text,
+        date: new Date().toLocaleString(),
       });
 
-      const newLog = await response.json();
+      const newLog = response.data;
 
       const li = document.createElement('li');
       li.textContent = newLog.text;
