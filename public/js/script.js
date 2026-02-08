@@ -1,4 +1,75 @@
-//* Loads courses from api to course select dropdown
+//* detect and apply theme
+function applyTheme() {
+  let userPref = 'unknown';
+  let browserPref = 'unknown';
+  let osPref = 'unknown';
+  let theme = 'light';
+
+  // check local storage for theme
+  const storedTheme = localStorage.getItem('theme');
+  if (storedTheme === 'dark' || storedTheme === 'light') {
+    userPref = storedTheme;
+    theme = storedTheme;
+  } else {
+    // check browser pref
+    if (window.matchMedia) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        browserPref = 'dark';
+        theme = 'dark';
+      } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        browserPref = 'light';
+        theme = 'light';
+      }
+    }
+
+    // check os pref
+  }
+
+  // apply theme
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeIcon(theme);
+
+  // log detection
+  console.log(`User Pref: ${userPref}`);
+  console.log(`Browser Pref: ${browserPref}`);
+  console.log(`OS Pref: ${osPref}`);
+  console.log(`Applied Theme: ${theme}`);
+}
+
+
+//* updates the theme button
+function updateThemeIcon(theme) {
+  const themeIcon = document.querySelector('.theme-icon');
+  if (themeIcon) {
+    themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+
+//* toggles theme
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  document.documentElement.setAttribute('data-theme', newTheme);
+  
+  localStorage.setItem('theme', newTheme);   // save pref
+
+  updateThemeIcon(newTheme);
+  console.log(`Theme switched to: ${newTheme}`);
+}
+
+
+//* init theme toggle
+function setupThemeToggle() {
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+  }
+}
+
+
+//* loads courses from api to course select dropdown
 async function LoadCourses() {
   const response = await axios.get('/api/v2/courses');
   const courses = response.data;
@@ -13,6 +84,7 @@ async function LoadCourses() {
 
   courseSelect.innerHTML = optionsHTML;
 }
+
 
 //* get and update logs
 async function LoadLogs(courseId, uvuId) {
@@ -43,7 +115,8 @@ async function LoadLogs(courseId, uvuId) {
   }
 }
 
-//* Show/hides id entry on course selected
+
+//* show/hides id entry on course selected
 function showIdEntry() {
   const courseDropDown = document.getElementById('course');
   const idEntryDiv = document.getElementById('id-entry');
@@ -63,7 +136,8 @@ function showIdEntry() {
   });
 }
 
-//* Validates id input, populates student logs, adds new logs
+
+//* validates id input, populates student logs, adds new logs
 function setupLogs() {
   const idInput = document.getElementById('uvuId');
   const studentLogs = document.getElementById('student-logs');
@@ -145,8 +219,11 @@ function setupLogs() {
   });
 }
 
+
 // init
 document.addEventListener('DOMContentLoaded', () => {
+  applyTheme();
+  setupThemeToggle();
   LoadCourses();
   showIdEntry();
   setupLogs();
