@@ -21,8 +21,6 @@ function applyTheme() {
         theme = 'light';
       }
     }
-
-    // check os pref
   }
 
   // apply theme
