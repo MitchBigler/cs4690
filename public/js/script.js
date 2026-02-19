@@ -1,3 +1,6 @@
+
+//////// THEME /////////
+
 //* detect and apply theme
 function applyTheme() {
   let userPref = 'unknown';
@@ -67,6 +70,8 @@ function setupThemeToggle() {
 }
 
 
+///////// API /////////
+
 //* loads courses from api to course select dropdown
 async function LoadCourses() {
   const response = await axios.get('/api/v2/courses');
@@ -75,7 +80,6 @@ async function LoadCourses() {
   const courseSelect = document.getElementById('course');
 
   let optionsHTML = '<option selected value="none">Choose Courses</option>';
-
   for (const course of courses) {
     optionsHTML += `<option value=${course.id}>${course.display}</option>`;
   }
@@ -113,6 +117,7 @@ async function LoadLogs(courseId, uvuId) {
   }
 }
 
+///////// EVENT /////////
 
 //* show/hides id entry on course selected
 function showIdEntry() {
@@ -218,11 +223,12 @@ function setupLogs() {
 }
 
 
-// init
-document.addEventListener('DOMContentLoaded', () => {
+///////// INIT /////////
+
+document.addEventListener('DOMContentLoaded', async () => {
   applyTheme();
   setupThemeToggle();
-  LoadCourses();
+  await LoadCourses();
   showIdEntry();
   setupLogs();
 });
