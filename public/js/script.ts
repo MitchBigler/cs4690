@@ -24,10 +24,11 @@ function applyTheme() {
         theme = 'light';
       }
     }
+
   }
 
   // apply theme
-  document.documentElement.setAttribute('data-theme', theme);
+  $('html').attr('data-bs-theme', theme);
   updateThemeIcon(theme);
 
   // log detection
@@ -40,33 +41,25 @@ function applyTheme() {
 
 //* updates the theme button
 function updateThemeIcon(theme: string): void {
-  const themeIcon = document.querySelector('.theme-icon');
-  if (themeIcon) {
-    themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
-  }
+  $('.theme-icon').text(theme === 'dark' ? '☀️' : '🌙');
 }
 
 
 //* toggles theme
-function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme');
+function toggleTheme(): void {
+  const currentTheme: string = $('html').attr('data-bs-theme') ?? 'light';
   const newTheme: string = currentTheme === 'dark' ? 'light' : 'dark';
-  
-  document.documentElement.setAttribute('data-theme', newTheme);
-  
-  localStorage.setItem('theme', newTheme);   // save pref
 
+  $('html').attr('data-bs-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
   updateThemeIcon(newTheme);
   console.log(`Theme switched to: ${newTheme}`);
 }
 
 
 //* init theme toggle
-function setupThemeToggle() {
-  const themeToggle = document.getElementById('theme-toggle');
-  if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme);
-  }
+function setupThemeToggle(): void {
+  $('#theme-toggle').on('click', toggleTheme);
 }
 
 

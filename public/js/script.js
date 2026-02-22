@@ -34,7 +34,7 @@ function applyTheme() {
         }
     }
     // apply theme
-    document.documentElement.setAttribute('data-theme', theme);
+    $('html').attr('data-bs-theme', theme);
     updateThemeIcon(theme);
     // log detection
     console.log(`User Pref: ${userPref}`);
@@ -44,26 +44,21 @@ function applyTheme() {
 }
 //* updates the theme button
 function updateThemeIcon(theme) {
-    const themeIcon = document.querySelector('.theme-icon');
-    if (themeIcon) {
-        themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
-    }
+    $('.theme-icon').text(theme === 'dark' ? '☀️' : '🌙');
 }
 //* toggles theme
 function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
+    var _a;
+    const currentTheme = (_a = $('html').attr('data-bs-theme')) !== null && _a !== void 0 ? _a : 'light';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme); // save pref
+    $('html').attr('data-bs-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
     updateThemeIcon(newTheme);
     console.log(`Theme switched to: ${newTheme}`);
 }
 //* init theme toggle
 function setupThemeToggle() {
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('click', toggleTheme);
-    }
+    $('#theme-toggle').on('click', toggleTheme);
 }
 ///////// API /////////
 //* loads courses from api to course select dropdown
