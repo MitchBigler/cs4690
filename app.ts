@@ -3,10 +3,10 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-
-// import indexRouter from './server/routes/index';
-// import logsRouter from './server/routes/logs';
-// import coursesRouter from './server/routes/courses';
+import mongoose from 'mongoose';
+import indexRouter from './server/routes/index';
+import logsRouter from './server/routes/logs';
+import coursesRouter from './server/routes/courses';
 
 const app: Express = express();
 
@@ -21,9 +21,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json());
 
-// app.use('/', indexRouter);
-// app.use('/logs', logsRouter);
-// app.use('/courses', coursesRouter);
+app.use('/', indexRouter);
+app.use('/logs', logsRouter);
+app.use('/courses', coursesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req: Request, res: Response, next: NextFunction) {
