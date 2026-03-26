@@ -63,34 +63,6 @@ async function loadCourses() {
     optionsHTML += `<option value='add'>Add new course</option>`;
     $('#course').html(optionsHTML);
 }
-//* get and update logs
-async function loadLogs(courseId, uvuId) {
-    const $logsList = $('#logs-list');
-    $logsList.empty();
-    // fire GET
-    try {
-        const logs = await $.getJSON(`/api/v1/logs?courseId=${courseId}&uvuId=${uvuId}`);
-        if (logs.length === 0) {
-            $logsList.html('<li class="list-group-item text-muted">No logs found for that UVU ID in this course.</li>');
-            return;
-        }
-        for (const log of logs) {
-            $logsList.append(`<li class="list-group-item log" style="cursor:pointer;">
-           <small class="text-muted">${log.date}</small>
-           <p class="log-text mb-0 mt-1">${log.text}</p>
-         </li>`);
-        }
-    }
-    catch (err) {
-        const jqErr = err;
-        if (jqErr.status) {
-            $logsList.html('<li class="list-group-item text-danger">No logs found for that id.</li>');
-        }
-        else {
-            $logsList.html('<li class="list-group-item text-danger">Error. Try again later.</li>');
-        }
-    }
-}
 async function postCourse(courseId, courseName, updateCourse = false) {
     try {
         const originalId = $('#course-original-id').val();
@@ -113,6 +85,54 @@ async function postCourse(courseId, courseName, updateCourse = false) {
     }
     catch (err) {
         console.error('Error adding course:', err);
+    }
+}
+//* get and update logs
+async function loadLogs(courseId, uvuId) {
+    const $logsList = $('#logs-list');
+    $logsList.empty();
+    // fire GET
+    try {
+        const logs = await $.getJSON(`/logs?courseId=${courseId}&uvuId=${uvuId}`);
+        if (logs.length === 0) {
+            $logsList.html('<li class="list-group-item text-muted">No logs found for that UVU ID in this course.</li>');
+            return;
+        }
+        for (const log of logs) {
+            $logsList.append(`<li class="list-group-item log" style="cursor:pointer;">
+           <small class="text-muted">${log.date}</small>
+           <p class="log-text mb-0 mt-1">${log.text}</p>
+         </li>`);
+        }
+    }
+    catch (err) {
+        const jqErr = err;
+        if (jqErr.status) {
+            $logsList.html('<li class="list-group-item text-danger">No logs found for that id.</li>');
+        }
+        else {
+            $logsList.html('<li class="list-group-item text-danger">Error. Try again later.</li>');
+        }
+    }
+}
+async function postLog(courseId, uvuId, text) {
+    try {
+        await $.ajax({
+            url: '/logs',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                id: crypto.randomUUID(),
+                courseId,
+                uvuId,
+                text,
+                date: new Date().toLocaleString(),
+            }),
+        });
+        await loadLogs(courseId, uvuId);
+    }
+    catch (err) {
+        console.error('Error adding log:', err);
     }
 }
 ///////// EVENT /////////
@@ -227,26 +247,9 @@ function setupLogs() {
         const text = $('#new-log-text').val().trim();
         const courseId = $('#course').val();
         const uvuId = $('#uvuId').val();
-        try {
-            await $.ajax({
-                url: '/api/v1/logs',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    id: crypto.randomUUID(),
-                    courseId,
-                    uvuId,
-                    text,
-                    date: new Date().toLocaleString(),
-                }),
-            });
-            $('#new-log-text').val('');
-            $('#add-log-btn').prop('disabled', true);
-            await loadLogs(courseId, uvuId);
-        }
-        catch (err) {
-            console.error('Error adding log:', err);
-        }
+        $('#new-log-text').val('');
+        $('#add-log-btn').prop('disabled', true);
+        postLog(courseId, uvuId, text);
     });
 }
 ///////// INIT /////////

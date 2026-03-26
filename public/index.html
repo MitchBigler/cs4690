@@ -33,6 +33,9 @@
 
     <div class="container" style="max-width: 850px;">
       <form class="card shadow-sm p-4">
+
+        <button id="show-update-course-btn" class="btn btn-link text-decoration-none mt-0 p-0 text-dark float-end d-none">Update Course</button>
+        
         <select
           aria-label="Select Course"
           id="course"
@@ -41,7 +44,7 @@
           class="form-select"
         ></select
         ><br />
-
+        
         <div id="add-course" class="mt-3 d-none">
           <div class="mb-3">
             <label for="course-name" class="form-label">Course Display Name</label>
@@ -54,14 +57,13 @@
           <button type="submit" id="add-course-btn" data-cy="add-course-btn" class="btn btn-success">Add Course</button>
         </div>
 
-        <button id="show-update-course-btn" class="btn btn-link text-decoration-none mt-0 p-0 text-grey d-none">Update Course</button>
         <div id="update-course" class="mt-2 mb-3 p-3 card shadow-sm d-none">
           <div class="mb-3">
             <label for="course-name-update" class="form-label">Course Display Name</label>
             <input type="text" id="course-name-update" name="course-name" class="form-control">
           </div>
           <div class="mb-3">
-            <label for="course-id-update" class="form-label">Course ID</label>
+            <label for="course-id-update" class="form-label">Course ID (associated logs will persist on old id)</label>
             <input type="text" id="course-id-update" name="course-id" class="form-control" placeholder="cs1234">
           </div>
           <input type="hidden" id="course-original-id" />

@@ -6,12 +6,14 @@ interface Log extends Entity {
     courseId: string;
     uvuId: string;
     text: string;
+    date: string;
 }
 
 const LogSchema : Schema<Log> = new Schema<Log>( {
       courseId: String,
       uvuId: String,
-      text: String
+      text: String,
+      date: String,
     });
 
 const LogModel : Model<Log> = model<Log>("logs", LogSchema);

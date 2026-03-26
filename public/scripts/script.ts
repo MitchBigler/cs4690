@@ -79,41 +79,6 @@ async function loadCourses() {
   $('#course').html(optionsHTML);
 }
 
-
-//* get and update logs
-async function loadLogs(courseId: string, uvuId: string): Promise<void> {
-  const $logsList = $('#logs-list');
-  $logsList.empty();
-
-  // fire GET
-  try {
-    const logs: { date: string; text: string }[] = await $.getJSON(
-      `/api/v1/logs?courseId=${courseId}&uvuId=${uvuId}`
-    );
-
-      if (logs.length === 0) {
-        $logsList.html('<li class="list-group-item text-muted">No logs found for that UVU ID in this course.</li>');
-        return;
-      }
-
-    for (const log of logs) {
-      $logsList.append(
-        `<li class="list-group-item log" style="cursor:pointer;">
-           <small class="text-muted">${log.date}</small>
-           <p class="log-text mb-0 mt-1">${log.text}</p>
-         </li>`
-      );
-    }
-  } catch (err: unknown) {
-    const jqErr = err as JQuery.jqXHR;
-    if (jqErr.status) {
-      $logsList.html('<li class="list-group-item text-danger">No logs found for that id.</li>');
-    } else {
-      $logsList.html('<li class="list-group-item text-danger">Error. Try again later.</li>');
-    }
-  }
-}
-
 async function postCourse(courseId: string, courseName: string, updateCourse: boolean = false): Promise<void> {
     try {
       const originalId = $('#course-original-id').val() as string;
@@ -139,6 +104,61 @@ async function postCourse(courseId: string, courseName: string, updateCourse: bo
     } catch (err: unknown) {
       console.error('Error adding course:', err);
     }
+}
+
+//* get and update logs
+async function loadLogs(courseId: string, uvuId: string): Promise<void> {
+  const $logsList = $('#logs-list');
+  $logsList.empty();
+
+  // fire GET
+  try {
+    const logs: { date: string; text: string }[] = await $.getJSON(
+      `/logs?courseId=${courseId}&uvuId=${uvuId}`
+    );
+
+      if (logs.length === 0) {
+        $logsList.html('<li class="list-group-item text-muted">No logs found for that UVU ID in this course.</li>');
+        return;
+      }
+
+    for (const log of logs) {
+      $logsList.append(
+        `<li class="list-group-item log" style="cursor:pointer;">
+           <small class="text-muted">${log.date}</small>
+           <p class="log-text mb-0 mt-1">${log.text}</p>
+         </li>`
+      );
+    }
+  } catch (err: unknown) {
+    const jqErr = err as JQuery.jqXHR;
+    if (jqErr.status) {
+      $logsList.html('<li class="list-group-item text-danger">No logs found for that id.</li>');
+    } else {
+      $logsList.html('<li class="list-group-item text-danger">Error. Try again later.</li>');
+    }
+  }
+}
+
+async function postLog(courseId: string, uvuId: string, text: string): Promise<void> {
+    try {
+    await $.ajax({
+      url: '/logs',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        id: crypto.randomUUID(),
+        courseId,
+        uvuId,
+        text,
+        date: new Date().toLocaleString(),
+      }),
+    });
+
+    await loadLogs(courseId, uvuId);
+  } catch (err: unknown) {
+    console.error('Error adding log:', err);
+  }
 }
 ///////// EVENT /////////
 
@@ -277,26 +297,10 @@ function setupLogs() {
     const courseId: string = $('#course').val() as string;
     const uvuId: string = $('#uvuId').val() as string;
 
-    try {
-      await $.ajax({
-        url: '/api/v1/logs',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({
-          id: crypto.randomUUID(),
-          courseId,
-          uvuId,
-          text,
-          date: new Date().toLocaleString(),
-        }),
-      });
+    $('#new-log-text').val('');
+    $('#add-log-btn').prop('disabled', true);
 
-      $('#new-log-text').val('');
-      $('#add-log-btn').prop('disabled', true);
-      await loadLogs(courseId, uvuId);
-    } catch (err: unknown) {
-      console.error('Error adding log:', err);
-    }
+    postLog(courseId, uvuId, text);
   });
 }
 

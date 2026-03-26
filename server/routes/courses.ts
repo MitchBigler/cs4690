@@ -19,7 +19,6 @@ router.get('/', async function(req: Request, res: Response, next: NextFunction) 
     const courseRepo : Repository<Course> = new Repository(CourseModel);
     const courses = await courseRepo.get(filters);
 
-    console.log(courses)
     res.json(courses);
   } catch (error) {
     next(error);
