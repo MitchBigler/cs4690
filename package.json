@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "tsc && copyfiles -u 0 server/db/db.json dist/",
+    "build": "tsc && npx tsc -p tsconfig.public.json",
     "watch": "tsc -w",
     "prestart": "npm run build",
     "start": "node ./dist/bin/www.js",
@@ -31,7 +31,9 @@
     "@types/jquery": "^4.0.0",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.7.0",
+    "@types/serve-static": "^1.15.5",
     "copyfiles": "^2.4.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "undici-types": "^7.24.6"
   }
 }

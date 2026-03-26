@@ -67,14 +67,15 @@ function setupThemeToggle(): void {
 
 //* loads courses from api to course select dropdown
 async function loadCourses() {
-  const response = await $.getJSON('/api/v2/courses');
+  const response = await $.getJSON('/courses');
   const courses = response;
 
   let optionsHTML: string = '<option selected value="none">Choose Courses</option>';
   for (const course of courses) {
-    optionsHTML += `<option value=${course.id}>${course.display}</option>`;
+    optionsHTML += `<option value="${course.id}">${course.display}</option>`;
   }
 
+  optionsHTML += `<option value='add'>Add new course</option>`;
   $('#course').html(optionsHTML);
 }
 
@@ -113,21 +114,119 @@ async function loadLogs(courseId: string, uvuId: string): Promise<void> {
   }
 }
 
+async function postCourse(courseId: string, courseName: string, updateCourse: boolean = false): Promise<void> {
+    try {
+      const originalId = $('#course-original-id').val() as string;
+
+      await $.ajax({
+        url: '/courses',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          id: courseId,
+          display: courseName,
+          updateCourse: updateCourse,
+          originalId: updateCourse ? originalId : undefined
+        }),
+      });
+
+      $('#course-id').val('');
+      $('#course-name').val('');
+      $('#course-id-update').val('');
+      $('#course-name-update').val('');
+
+      await loadCourses();
+    } catch (err: unknown) {
+      console.error('Error adding course:', err);
+    }
+}
 ///////// EVENT /////////
 
 //* show/hides id entry on course selected
 function showIdEntry(): void {
   $('#course').on('change', function () {
-    const isNone: boolean = $(this).val() === 'none';
-    $('#id-entry').toggleClass('d-none', isNone);
+    const value = $(this).val() as string;
+
+    // hide all
+    $('#id-entry').addClass('d-none');
+    $('#add-course').addClass('d-none');
     $('#uvuId').val('');
     $('#logs-list').empty();
     $('#student-logs').addClass('d-none');
+    $('#update-course').addClass('d-none');
     $('#new-log-text').val('');
     $('#add-log-btn').prop('disabled', true);
+    $('#show-update-course-btn').addClass('d-none');
+
+
+    if (value === 'none') {
+    } else if (value === 'add') {
+      $('#add-course').removeClass('d-none');
+    } else {
+      $('#id-entry').removeClass('d-none');
+      $('#show-update-course-btn').removeClass('d-none');
+    }
   });
 }
 
+// logic for adding new course
+function setupAddCourses() {
+  // POST new log
+  $('#add-course-btn').on('click', async function (e: JQuery.ClickEvent) {
+    e.preventDefault();
+
+    const courseId: string = $('#course-id').val() as string;
+    const courseName: string = $('#course-name').val() as string;
+
+    if (!courseId || !courseName) {
+      alert('Please fill out all fields');
+      return;
+    }
+
+    $('#add-course-btn').prop('disabled', true);
+    await postCourse(courseId, courseName);
+    $('#add-course-btn').prop('disabled', false);
+
+  })
+}
+
+// logic for updating course
+function setupUpdateCourses() {
+  // show update form
+  $('#show-update-course-btn').on('click', async function (e: JQuery.ClickEvent) {
+    e.preventDefault();
+    if ($('#update-course').hasClass('d-none')) {
+      $('#update-course').removeClass('d-none');
+      const currentCourse: string = $('#course option:selected').text() as string;
+      const currentCourseId: string = $('#course').val() as string;
+
+      $('#course-name-update').val(currentCourse);
+      $('#course-id-update').val(currentCourseId);
+      $('#course-original-id').val(currentCourseId);
+
+    } else {
+      $('#update-course').addClass('d-none');
+    }
+  })
+
+  $('#update-course-btn').on('click', async function (e: JQuery.ClickEvent) {
+    e.preventDefault();
+
+    const courseId: string = $('#course-id-update').val() as string;
+    const courseName: string = $('#course-name-update').val() as string;
+
+    if (!courseId || !courseName) {
+      alert('Please fill out all fields');
+      return;
+    }
+    
+    $('#update-course-btn').prop('disabled', true);
+    await postCourse(courseId, courseName, true);
+    $('#update-course-btn').prop('disabled', false);
+
+    $('#update-course').addClass('d-none');
+  })
+}
 
 //* validates id input, populates student logs, adds new logs
 function setupLogs() {
@@ -209,5 +308,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupThemeToggle();
   await loadCourses();
   showIdEntry();
+  setupAddCourses();
+  setupUpdateCourses();
   setupLogs();
 });

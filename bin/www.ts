@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config() // load env
 
-console.log("starting...")
+console.log("starting...\n")
 
 /**
  * Module dependencies.
@@ -101,7 +101,7 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  console.log('======================');
-  console.log('Listening on ' + bind);
-  console.log('======================');
+  console.log('========================');
+  console.log(' Listening on ' + bind);
+  console.log('========================');
 }

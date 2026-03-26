@@ -7,6 +7,7 @@ const router = express.Router();
 // GET courses with optional filters (courseId, uvuId, logId, etc.) 
 router.get('/', async function(req: Request, res: Response, next: NextFunction) {
   try {
+    console.log("GET /courses");
     // Convert URL query parameters to Map for filtering
     // Only include string values, skip arrays/objects
     const filters = new Map(
@@ -16,9 +17,10 @@ router.get('/', async function(req: Request, res: Response, next: NextFunction) 
     );
 
     const courseRepo : Repository<Course> = new Repository(CourseModel);
-    const logs = await courseRepo.get(filters);
+    const courses = await courseRepo.get(filters);
 
-    res.json(logs);
+    console.log(courses)
+    res.json(courses);
   } catch (error) {
     next(error);
   }
@@ -26,25 +28,28 @@ router.get('/', async function(req: Request, res: Response, next: NextFunction) 
 
 router.post('/', async function(req: Request, res: Response, next: NextFunction) {
   try {
-    const courseRepo : Repository<Course> = new Repository(CourseModel);
+    const courseRepo: Repository<Course> = new Repository(CourseModel);
+    const { id, display, updateCourse, originalId } = req.body;
 
-    // use the code that converts json into a log using body-parser
-    let course : Course = req.body;
+    if (updateCourse) {
+      const updated = await courseRepo.update(
+        { id: originalId } as Partial<Course>,
+        { id, display } as Partial<Course>
+      );
+      if (!updated) {
+        return res.status(404).json({ message: "Course not found." });
+      }
+      return res.status(200).json(updated);
+    }
 
-
-    // we need logRepo to return a log object in case:
-    // 1.  it's an insert to get the Id from the returned object on the post, 
-    // 2.  for updates, the data should match, unless updates also do something like 
-    //     a. updates the version number or 
-    //     b. updates the last modified time, etc.
-    //     c. in which case, the inserts should do 2.a-2.b type changes also!
+    // insert new
+    let course: Course = req.body;
     course = await courseRepo.save(course);
-    
-    res.json(course);
-  } catch (error) {
-    next(error);
-  }
+    return res.status(201).json(course);
 
+  } catch (error) {
+    return next(error);
+  }
 });
 
 

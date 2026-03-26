@@ -1,13 +1,5 @@
+"use strict";
 //////// THEME /////////
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 //* detect and apply theme
 function applyTheme() {
     let userPref = 'unknown';
@@ -48,8 +40,7 @@ function updateThemeIcon(theme) {
 }
 //* toggles theme
 function toggleTheme() {
-    var _a;
-    const currentTheme = (_a = $('html').attr('data-bs-theme')) !== null && _a !== void 0 ? _a : 'light';
+    const currentTheme = $('html').attr('data-bs-theme') ?? 'light';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     $('html').attr('data-bs-theme', newTheme);
     localStorage.setItem('theme', newTheme);
@@ -62,58 +53,139 @@ function setupThemeToggle() {
 }
 ///////// API /////////
 //* loads courses from api to course select dropdown
-function loadCourses() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const response = yield $.getJSON('/api/v2/courses');
-        const courses = response;
-        let optionsHTML = '<option selected value="none">Choose Courses</option>';
-        for (const course of courses) {
-            optionsHTML += `<option value=${course.id}>${course.display}</option>`;
-        }
-        $('#course').html(optionsHTML);
-    });
+async function loadCourses() {
+    const response = await $.getJSON('/courses');
+    const courses = response;
+    let optionsHTML = '<option selected value="none">Choose Courses</option>';
+    for (const course of courses) {
+        optionsHTML += `<option value="${course.id}">${course.display}</option>`;
+    }
+    optionsHTML += `<option value='add'>Add new course</option>`;
+    $('#course').html(optionsHTML);
 }
 //* get and update logs
-function loadLogs(courseId, uvuId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const $logsList = $('#logs-list');
-        $logsList.empty();
-        // fire GET
-        try {
-            const logs = yield $.getJSON(`/api/v1/logs?courseId=${courseId}&uvuId=${uvuId}`);
-            if (logs.length === 0) {
-                $logsList.html('<li class="list-group-item text-muted">No logs found for that UVU ID in this course.</li>');
-                return;
-            }
-            for (const log of logs) {
-                $logsList.append(`<li class="list-group-item log" style="cursor:pointer;">
+async function loadLogs(courseId, uvuId) {
+    const $logsList = $('#logs-list');
+    $logsList.empty();
+    // fire GET
+    try {
+        const logs = await $.getJSON(`/api/v1/logs?courseId=${courseId}&uvuId=${uvuId}`);
+        if (logs.length === 0) {
+            $logsList.html('<li class="list-group-item text-muted">No logs found for that UVU ID in this course.</li>');
+            return;
+        }
+        for (const log of logs) {
+            $logsList.append(`<li class="list-group-item log" style="cursor:pointer;">
            <small class="text-muted">${log.date}</small>
            <p class="log-text mb-0 mt-1">${log.text}</p>
          </li>`);
-            }
         }
-        catch (err) {
-            const jqErr = err;
-            if (jqErr.status) {
-                $logsList.html('<li class="list-group-item text-danger">No logs found for that id.</li>');
-            }
-            else {
-                $logsList.html('<li class="list-group-item text-danger">Error. Try again later.</li>');
-            }
+    }
+    catch (err) {
+        const jqErr = err;
+        if (jqErr.status) {
+            $logsList.html('<li class="list-group-item text-danger">No logs found for that id.</li>');
         }
-    });
+        else {
+            $logsList.html('<li class="list-group-item text-danger">Error. Try again later.</li>');
+        }
+    }
+}
+async function postCourse(courseId, courseName, updateCourse = false) {
+    try {
+        const originalId = $('#course-original-id').val();
+        await $.ajax({
+            url: '/courses',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                id: courseId,
+                display: courseName,
+                updateCourse: updateCourse,
+                originalId: updateCourse ? originalId : undefined
+            }),
+        });
+        $('#course-id').val('');
+        $('#course-name').val('');
+        $('#course-id-update').val('');
+        $('#course-name-update').val('');
+        await loadCourses();
+    }
+    catch (err) {
+        console.error('Error adding course:', err);
+    }
 }
 ///////// EVENT /////////
 //* show/hides id entry on course selected
 function showIdEntry() {
     $('#course').on('change', function () {
-        const isNone = $(this).val() === 'none';
-        $('#id-entry').toggleClass('d-none', isNone);
+        const value = $(this).val();
+        // hide all
+        $('#id-entry').addClass('d-none');
+        $('#add-course').addClass('d-none');
         $('#uvuId').val('');
         $('#logs-list').empty();
         $('#student-logs').addClass('d-none');
+        $('#update-course').addClass('d-none');
         $('#new-log-text').val('');
         $('#add-log-btn').prop('disabled', true);
+        $('#show-update-course-btn').addClass('d-none');
+        if (value === 'none') {
+        }
+        else if (value === 'add') {
+            $('#add-course').removeClass('d-none');
+        }
+        else {
+            $('#id-entry').removeClass('d-none');
+            $('#show-update-course-btn').removeClass('d-none');
+        }
+    });
+}
+// logic for adding new course
+function setupAddCourses() {
+    // POST new log
+    $('#add-course-btn').on('click', async function (e) {
+        e.preventDefault();
+        const courseId = $('#course-id').val();
+        const courseName = $('#course-name').val();
+        if (!courseId || !courseName) {
+            alert('Please fill out all fields');
+            return;
+        }
+        $('#add-course-btn').prop('disabled', true);
+        await postCourse(courseId, courseName);
+        $('#add-course-btn').prop('disabled', false);
+    });
+}
+// logic for updating course
+function setupUpdateCourses() {
+    // show update form
+    $('#show-update-course-btn').on('click', async function (e) {
+        e.preventDefault();
+        if ($('#update-course').hasClass('d-none')) {
+            $('#update-course').removeClass('d-none');
+            const currentCourse = $('#course option:selected').text();
+            const currentCourseId = $('#course').val();
+            $('#course-name-update').val(currentCourse);
+            $('#course-id-update').val(currentCourseId);
+            $('#course-original-id').val(currentCourseId);
+        }
+        else {
+            $('#update-course').addClass('d-none');
+        }
+    });
+    $('#update-course-btn').on('click', async function (e) {
+        e.preventDefault();
+        const courseId = $('#course-id-update').val();
+        const courseName = $('#course-name-update').val();
+        if (!courseId || !courseName) {
+            alert('Please fill out all fields');
+            return;
+        }
+        $('#update-course-btn').prop('disabled', true);
+        await postCourse(courseId, courseName, true);
+        $('#update-course-btn').prop('disabled', false);
+        $('#update-course').addClass('d-none');
     });
 }
 //* validates id input, populates student logs, adds new logs
@@ -121,27 +193,25 @@ function setupLogs() {
     let lastId = '';
     let lastCourseId = '';
     // validate id entry
-    $('#uvuId').on('input', function () {
-        return __awaiter(this, void 0, void 0, function* () {
-            let id = $(this).val().replace(/\D/g, '').slice(0, 8);
-            $(this).val(id);
-            $('#logs-list').empty();
-            if (id.length < 8) {
-                $('#student-logs').addClass('d-none');
-                lastId = '';
-                return;
-            }
-            $('#student-logs').removeClass('d-none');
-            $('#uvuIdDisplay').text(`Student Logs for ${id}`);
-            const courseId = $('#course').val();
-            if (id === lastId && courseId === lastCourseId)
-                return;
-            lastId = id;
-            lastCourseId = courseId;
-            yield loadLogs(courseId, id);
-            // disable button
-            $('#add-log-button').prop('disabled', $('#new-log-text').val().trim() === '');
-        });
+    $('#uvuId').on('input', async function () {
+        let id = $(this).val().replace(/\D/g, '').slice(0, 8);
+        $(this).val(id);
+        $('#logs-list').empty();
+        if (id.length < 8) {
+            $('#student-logs').addClass('d-none');
+            lastId = '';
+            return;
+        }
+        $('#student-logs').removeClass('d-none');
+        $('#uvuIdDisplay').text(`Student Logs for ${id}`);
+        const courseId = $('#course').val();
+        if (id === lastId && courseId === lastCourseId)
+            return;
+        lastId = id;
+        lastCourseId = courseId;
+        await loadLogs(courseId, id);
+        // disable button
+        $('#add-log-button').prop('disabled', $('#new-log-text').val().trim() === '');
     });
     // toggle log visibility
     $('#logs-list').on('click', '.log', function () {
@@ -152,41 +222,41 @@ function setupLogs() {
         $('#add-log-btn').prop('disabled', $(this).val().trim() === '');
     });
     // POST new log
-    $('#add-log-btn').on('click', function (e) {
-        return __awaiter(this, void 0, void 0, function* () {
-            e.preventDefault();
-            const text = $('#new-log-text').val().trim();
-            const courseId = $('#course').val();
-            const uvuId = $('#uvuId').val();
-            try {
-                yield $.ajax({
-                    url: '/api/v1/logs',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        id: crypto.randomUUID(),
-                        courseId,
-                        uvuId,
-                        text,
-                        date: new Date().toLocaleString(),
-                    }),
-                });
-                $('#new-log-text').val('');
-                $('#add-log-btn').prop('disabled', true);
-                yield loadLogs(courseId, uvuId);
-            }
-            catch (err) {
-                console.error('Error adding log:', err);
-            }
-        });
+    $('#add-log-btn').on('click', async function (e) {
+        e.preventDefault();
+        const text = $('#new-log-text').val().trim();
+        const courseId = $('#course').val();
+        const uvuId = $('#uvuId').val();
+        try {
+            await $.ajax({
+                url: '/api/v1/logs',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    id: crypto.randomUUID(),
+                    courseId,
+                    uvuId,
+                    text,
+                    date: new Date().toLocaleString(),
+                }),
+            });
+            $('#new-log-text').val('');
+            $('#add-log-btn').prop('disabled', true);
+            await loadLogs(courseId, uvuId);
+        }
+        catch (err) {
+            console.error('Error adding log:', err);
+        }
     });
 }
 ///////// INIT /////////
-document.addEventListener('DOMContentLoaded', () => __awaiter(void 0, void 0, void 0, function* () {
+document.addEventListener('DOMContentLoaded', async () => {
     applyTheme();
     setupThemeToggle();
-    yield loadCourses();
+    await loadCourses();
     showIdEntry();
+    setupAddCourses();
+    setupUpdateCourses();
     setupLogs();
-}));
+});
 //# sourceMappingURL=script.js.map

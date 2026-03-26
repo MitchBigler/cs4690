@@ -14,18 +14,18 @@ class Repository<T extends Entity> {
     {
         try {
             const modelT = new this.entityModel(t);
-            const isSaved = await modelT.save();
-            if (isSaved)
+            const saved = await modelT.save();
+            if (saved)
             {
                 t = modelT;
             }
+            console.log(`Saved ${JSON.stringify(t)} to collection`);
+            return t;
             
         } catch (error) {
             console.error('Error connecting to MongoDB:', error);
+            throw error;
         }
-        // check out what the inserted at, created at, (and _id are if it's an insert) or (only the first two if update)
-        console.log(`Saved ${JSON.stringify(t)} to collection`);
-        return t;
     }
 
     async get(filters?: Map<string, string>): Promise<T[] | null>
@@ -45,6 +45,21 @@ class Repository<T extends Entity> {
 
         return results;
     }
+
+    public async update(filters: Partial<T>, updates: Partial<T>): Promise<T | null> {
+    try {
+        const updated = await this.entityModel.findOneAndUpdate(
+            filters,
+            { $set: updates },
+            { new: true }
+        );
+        console.log(`Updated: ${JSON.stringify(updated)}`);
+        return updated as T | null;
+    } catch (error) {
+        console.error('Error updating document:', error);
+        throw error;
+    }
+}
 }
 
 export { Repository };
