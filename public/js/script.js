@@ -94,15 +94,34 @@ async function loadLogs(courseId, uvuId) {
     // fire GET
     try {
         const logs = await $.getJSON(`/logs?courseId=${courseId}&uvuId=${uvuId}`);
+        console.log(logs);
         if (logs.length === 0) {
             $logsList.html('<li class="list-group-item text-muted">No logs found for that UVU ID in this course.</li>');
             return;
         }
         for (const log of logs) {
-            $logsList.append(`<li class="list-group-item log" style="cursor:pointer;">
-           <small class="text-muted">${log.date}</small>
-           <p class="log-text mb-0 mt-1">${log.text}</p>
-         </li>`);
+            const $li = $(`
+        <li class="list-group-item log" data-id="${log._id}">
+          <div class="d-flex justify-content-between">
+            <div>
+              <small class="text-muted">${log.date}</small>
+              <p id="log-text" class="log-text mb-0 mt-1">${log.text}</p>
+            </div>
+            <button id="edit-log-btn" class="btn btn-sm edit-btn">Edit</button>
+          </div>
+        </li>
+      `);
+            $li.find('#edit-log-btn').on('click', function (e) {
+                e.preventDefault();
+                const logId = $li.attr('data-id');
+                const $logText = $li.find('#log-text');
+                const newText = prompt("Edit log entry:", $logText.text());
+                if (newText !== null && newText.trim() !== "") {
+                    $logText.text(newText);
+                }
+                postLog(courseId, uvuId, $logText.text(), logId);
+            });
+            $logsList.append($li);
         }
     }
     catch (err) {
@@ -115,7 +134,7 @@ async function loadLogs(courseId, uvuId) {
         }
     }
 }
-async function postLog(courseId, uvuId, text) {
+async function postLog(courseId, uvuId, text, logId = '') {
     try {
         await $.ajax({
             url: '/logs',
@@ -125,6 +144,7 @@ async function postLog(courseId, uvuId, text) {
                 id: crypto.randomUUID(),
                 courseId,
                 uvuId,
+                logId,
                 text,
                 date: new Date().toLocaleString(),
             }),
@@ -235,7 +255,8 @@ function setupLogs() {
     });
     // toggle log visibility
     $('#logs-list').on('click', '.log', function () {
-        $(this).find('.log-text').toggleClass('d-none');
+        $(this).find('#log-text').toggleClass('d-none');
+        $(this).find('#edit-log-btn').toggleClass('d-none');
     });
     // enable add log button when text in new log
     $('#new-log-text').on('input', function () {

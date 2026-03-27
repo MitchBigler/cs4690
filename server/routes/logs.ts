@@ -27,25 +27,30 @@ router.get('/', async function(req: Request, res: Response, next: NextFunction) 
 router.post('/', async function(req: Request, res: Response, next: NextFunction) {
   try {
     const logRepo : Repository<Log> = new Repository<Log>(LogModel);
+    const { id, courseId, uvuId, text, date, logId } = req.body;
 
-    // use the code that converts json into a log using body-parser
+    // if log id then update
+    if (logId) {
+      const updated = await logRepo.update(
+        { _id: logId } as Partial<Log>,
+        { text, date } as Partial<Log>
+      );
+
+      if (!updated) {
+        return res.status(404).json({ message: "Log not found." });
+      }
+      return res.status(200).json(updated);
+    }
+
     let log : Log = req.body;
+    delete (log as any).logId; // dont insert empty string
 
-
-    // we need logRepo to return a log object in case:
-    // 1.  it's an insert to get the Id from the returned object on the post, 
-    // 2.  for updates, the data should match, unless updates also do something like 
-    //     a. updates the version number or 
-    //     b. updates the last modified time, etc.
-    //     c. in which case, the inserts should do 2.a-2.b type changes also!
     log = await logRepo.save(log);
-    
-    res.json(log);
+    res.status(201).json(log);
+
   } catch (error) {
-    next(error);
+    return next(error);
   }
-
 });
-
 
 export default router;
