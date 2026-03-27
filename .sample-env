@@ -1,0 +1,3 @@
+# replace <username> and <password>
+MONGO_DB_URI=mongodb+srv://<username>:<password>@4690cluster.megti0o.mongodb.net/?appName=4690cluster
+PORT=3000
