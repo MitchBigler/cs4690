@@ -21,7 +21,7 @@ router.get('/', requireAuth, requireUniversity, async (req: Request, res: Respon
   } catch (err) { next(err); }
 });
 
-// POST /:university/api/courses  (admin or teacher)
+// POST /:university/api/courses
 router.post('/', requireAuth, requireUniversity, requireRole('admin', 'teacher'), async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id, display } = req.body;

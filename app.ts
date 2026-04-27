@@ -26,12 +26,12 @@ export function createApp(mongoUri: string): Express {
     cookie: { httpOnly: true, secure: false, maxAge: 86400000 },
   }));
 
-  // Static files per university (served before API routes so HTML/CSS/JS load correctly)
+  // separate static files for universities
   app.use('/uvu',  express.static(path.join(__dirname, '../public/uvu')));
   app.use('/uofu', express.static(path.join(__dirname, '../public/uofu')));
   app.use(express.static(path.join(__dirname, '../public'), { index: false }));
 
-  // HTML page routes
+  // routes
   app.get('/uvu/login',     (_req, res) => res.sendFile(path.resolve(__dirname, '../public/uvu/login.html')));
   app.get('/uvu/signup',    (_req, res) => res.sendFile(path.resolve(__dirname, '../public/uvu/signup.html')));
   app.get('/uvu/dashboard', (_req, res) => res.sendFile(path.resolve(__dirname, '../public/uvu/dashboard.html')));
@@ -39,7 +39,6 @@ export function createApp(mongoUri: string): Express {
   app.get('/uofu/signup',   (_req, res) => res.sendFile(path.resolve(__dirname, '../public/uofu/signup.html')));
   app.get('/uofu/dashboard',(_req, res) => res.sendFile(path.resolve(__dirname, '../public/uofu/dashboard.html')));
 
-  // Landing page
   app.get('/', (_req, res) => {
     res.send(`<!DOCTYPE html>
 <html lang="en">
@@ -71,7 +70,7 @@ export function createApp(mongoUri: string): Express {
 </html>`);
   });
 
-  // API routes — all prefixed /:university/api/
+  // API routes
   app.use('/:university/api', authRouter);
   app.use('/:university/api/courses', coursesRouter);
   app.use('/:university/api/logs', logsRouter);

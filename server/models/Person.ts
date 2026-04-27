@@ -6,11 +6,11 @@ export type University = 'uvu' | 'uofu';
 
 export interface Person extends Entity {
   username: string;
-  password: string;       // bcrypt hashed
+  password: string;
   role: Role;
   university: University;
   displayName?: string;
-  uvuId?: string;         // for students; links to Log.uvuId
+  uvuId?: string;
 }
 
 const PersonSchema: Schema<Person> = new Schema<Person>(
@@ -25,7 +25,7 @@ const PersonSchema: Schema<Person> = new Schema<Person>(
   { timestamps: true }
 );
 
-// Enforce username uniqueness per university (same username allowed across universities)
+// no dupe usernames
 PersonSchema.index({ username: 1, university: 1 }, { unique: true });
 
 export const PersonModel: Model<Person> = model<Person>('persons', PersonSchema);

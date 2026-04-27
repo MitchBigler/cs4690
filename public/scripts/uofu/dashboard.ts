@@ -52,6 +52,13 @@ async function api(method: string, path: string, body?: object): Promise<Respons
     window.location.href = `/${UNI}/login`;
     throw new Error('Unauthorized');
   }
+  if (res.status === 403) {
+    const data = await res.clone().json().catch(() => ({}));
+    console.warn(`[ACCESS DENIED] ${method} /${UNI}/api${path} — ${(data as { message?: string }).message || 'Forbidden'}`);
+    await fetch(`/${UNI}/api/logout`, { method: 'POST' });
+    window.location.href = `/${UNI}/login`;
+    throw new Error('Forbidden');
+  }
   return res;
 }
 
