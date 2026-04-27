@@ -29,7 +29,7 @@ router.get('/', requireAuth, requireUniversity, async (req: Request, res: Respon
       filter.uvuId = sessionUvuId;
     }
 
-    const logs = await LogModel.find(filter).sort({ createdAt: -1 });
+    const logs = await LogModel.find(filter).sort({ createdAt: 1 });
     res.json(logs);
   } catch (err) { next(err); }
 });

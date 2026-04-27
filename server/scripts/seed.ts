@@ -34,8 +34,8 @@ async function seed(): Promise<void> {
     { username: 'teacher_uofu',  password: teacherHash, role: 'teacher', university: 'uofu', displayName: 'Dr. Jones (UofU)' },
     { username: 'ta_uvu',        password: taHash,      role: 'ta',      university: 'uvu',  displayName: 'TA Alice (UVU)' },
     { username: 'ta_uofu',       password: taHash,      role: 'ta',      university: 'uofu', displayName: 'TA Bob (UofU)' },
-    { username: 'student_uvu',   password: studentHash, role: 'student', university: 'uvu',  uvuId: '10111111', displayName: 'Alice Student' },
-    { username: 'student_uofu',  password: studentHash, role: 'student', university: 'uofu', uvuId: '20222222', displayName: 'Bob Student' },
+    { username: 'student_uvu',   password: studentHash, role: 'student', university: 'uvu',  uvuId: '10111111', displayName: 'Mitch Bigler' },
+    { username: 'student_uofu',  password: studentHash, role: 'student', university: 'uofu', uvuId: '20222222', displayName: 'Utah Student' },
   ]);
 
   await CourseModel.insertMany([

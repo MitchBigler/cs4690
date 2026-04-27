@@ -111,17 +111,34 @@ async function loadLogs() {
             return;
         }
         container.innerHTML = logs.map(l => `
-      <div class="card log-card p-2 mb-2">
-        <div class="d-flex justify-content-between align-items-start">
-          <small class="text-muted">ID: ${l.uvuId} &bull; ${l.date}</small>
-          ${currentUser?.role !== 'student' || l.uvuId === currentUser?.uvuId
+      <div class="card log-card p-0 mb-2 overflow-hidden">
+        <div class="d-flex justify-content-between align-items-center px-2 py-2 log-toggle" style="cursor:pointer" data-target="log-body-${l._id}">
+          <small class="text-muted mb-0">ID: ${l.uvuId} &bull; ${l.date}</small>
+          <div class="d-flex align-items-center gap-2">
+            ${currentUser?.role !== 'student' || l.uvuId === currentUser?.uvuId
             ? `<button class="btn btn-link btn-sm p-0 ${BRAND_TEXT} text-decoration-none" data-logid="${l._id}" data-uvuid="${l.uvuId}" data-text="${encodeURIComponent(l.text)}">Edit</button>`
             : ''}
+            <span class="log-chevron text-muted" style="font-size:0.75rem">&#9660;</span>
+          </div>
         </div>
-        <div class="mt-1">${l.text}</div>
+        <div id="log-body-${l._id}" class="px-2 pb-2 d-none border-top">${l.text}</div>
       </div>`).join('');
         container.querySelectorAll('[data-logid]').forEach(el => {
-            el.addEventListener('click', () => editLog(el.dataset.logid, el.dataset.uvuid, decodeURIComponent(el.dataset.text)));
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                editLog(el.dataset.logid, el.dataset.uvuid, decodeURIComponent(el.dataset.text));
+            });
+        });
+        container.querySelectorAll('.log-toggle').forEach(row => {
+            row.addEventListener('click', () => {
+                const body = document.getElementById(row.dataset.target);
+                const chevron = row.querySelector('.log-chevron');
+                if (!body)
+                    return;
+                const hidden = body.classList.toggle('d-none');
+                if (chevron)
+                    chevron.innerHTML = hidden ? '&#9660;' : '&#9650;';
+            });
         });
     }
     catch {
