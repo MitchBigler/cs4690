@@ -1,0 +1,41 @@
+:root {
+  --uofu-red: #CC0000;
+  --uofu-red-dark: #990000;
+  --uofu-gold: #C0922A;
+}
+
+.uofu-navbar  { background-color: var(--uofu-red); }
+.uofu-btn     { background-color: var(--uofu-red); color: #fff; border: none; }
+.uofu-btn:hover { background-color: var(--uofu-red-dark); color: #fff; }
+.uofu-text    { color: var(--uofu-red); }
+.uofu-badge   { background-color: var(--uofu-red) !important; }
+
+body { background-color: #f7f5f5; font-family: 'Segoe UI', sans-serif; }
+.card {
+  border-radius: 0.75rem;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.nav-role-badge {
+  font-size: 0.7rem;
+  padding: 0.3em 0.7em;
+  border-radius: 1rem;
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.course-chip {
+  display: inline-block;
+  cursor: pointer;
+  background: var(--uofu-red);
+  color: #fff;
+  padding: 0.4em 1em;
+  border-radius: 2rem;
+  margin: 0.25rem;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+.course-chip:hover { background: var(--uofu-red-dark); }
+.log-card { border-left: 4px solid var(--uofu-red); }

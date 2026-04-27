@@ -1,4 +1,3 @@
-"use strict";
 //////// THEME /////////
 //* detect and apply theme
 function applyTheme() {
@@ -283,4 +282,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupUpdateCourses();
     setupLogs();
 });
+export {};
 //# sourceMappingURL=script.js.map

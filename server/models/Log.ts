@@ -1,21 +1,24 @@
 import { model, Model, Schema } from 'mongoose';
-import { Entity } from "./Entity";
+import { Entity } from './Entity';
+import { University } from './Person';
 
-// {"courseId":"cs4660","uvuId":"10111111","date":"1/23/2021 1:23:36 PM","text":"Initial comment. Hello World"
-interface Log extends Entity {
-    courseId: string;
-    uvuId: string;
-    text: string;
-    date: string;
+export interface Log extends Entity {
+  courseId: string;
+  uvuId: string;
+  text: string;
+  date: string;
+  university: University;
 }
 
-const LogSchema : Schema<Log> = new Schema<Log>( {
-      courseId: String,
-      uvuId: String,
-      text: String,
-      date: String,
-    });
+const LogSchema: Schema<Log> = new Schema<Log>(
+  {
+    courseId:   { type: String, required: true },
+    uvuId:      { type: String, required: true },
+    text:       { type: String, required: true },
+    date:       { type: String, required: true },
+    university: { type: String, enum: ['uvu', 'uofu'], required: true },
+  },
+  { timestamps: true }
+);
 
-const LogModel : Model<Log> = model<Log>("logs", LogSchema);
-
-export { Log, LogSchema, LogModel };
+export const LogModel: Model<Log> = model<Log>('logs', LogSchema);

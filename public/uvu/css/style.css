@@ -1,0 +1,41 @@
+:root {
+  --uvu-green: #275D38;
+  --uvu-green-dark: #1a3d25;
+  --uvu-green-light: #3a7d4e;
+}
+
+.uvu-navbar  { background-color: var(--uvu-green); }
+.uvu-btn     { background-color: var(--uvu-green); color: #fff; border: none; }
+.uvu-btn:hover { background-color: var(--uvu-green-dark); color: #fff; }
+.uvu-text    { color: var(--uvu-green); }
+.uvu-badge   { background-color: var(--uvu-green) !important; }
+
+body { background-color: #f5f7f5; font-family: 'Segoe UI', sans-serif; }
+.card {
+  border-radius: 0.75rem;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.nav-role-badge {
+  font-size: 0.7rem;
+  padding: 0.3em 0.7em;
+  border-radius: 1rem;
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.course-chip {
+  display: inline-block;
+  cursor: pointer;
+  background: var(--uvu-green);
+  color: #fff;
+  padding: 0.4em 1em;
+  border-radius: 2rem;
+  margin: 0.25rem;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+.course-chip:hover { background: var(--uvu-green-dark); }
+.log-card { border-left: 4px solid var(--uvu-green); }

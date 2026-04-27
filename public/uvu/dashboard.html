@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-US" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UVU Student Logs - Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <link rel="stylesheet" href="/uvu/css/style.css" />
+</head>
+<body>
+  <nav class="navbar navbar-dark px-4 mb-4 uvu-navbar d-flex justify-content-between align-items-center">
+    <span class="navbar-brand fs-5 fw-bold mb-0">UVU Student Logs</span>
+    <div class="d-flex align-items-center gap-3">
+      <span class="text-white fw-semibold" id="nav-user"></span>
+      <span class="nav-role-badge" id="nav-role"></span>
+      <button class="btn btn-outline-light btn-sm" id="btn-logout">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-4">
+    <div class="row g-4">
+
+      <!-- LEFT PANEL: Role-specific actions -->
+      <div class="col-lg-4">
+
+        <!-- ADMIN PANEL -->
+        <div id="section-admin" class="d-none">
+          <div class="card p-3 mb-3">
+            <h6 class="uvu-text fw-bold mb-3">Create Course</h6>
+            <input id="admin-course-id" class="form-control mb-2" placeholder="Course ID (e.g. cs4690)" />
+            <input id="admin-course-display" class="form-control mb-2" placeholder="Display Name (e.g. CS 4690)" />
+            <button class="btn uvu-btn btn-sm w-100" id="btn-admin-create-course">Create Course</button>
+          </div>
+          <div class="card p-3 mb-3">
+            <h6 class="uvu-text fw-bold mb-3">Create User</h6>
+            <input id="admin-new-username" class="form-control mb-2" placeholder="Username" />
+            <input id="admin-new-password" class="form-control mb-2" placeholder="Password" type="password" />
+            <input id="admin-new-displayname" class="form-control mb-2" placeholder="Display Name" />
+            <input id="admin-new-uvuid" class="form-control mb-2" placeholder="UVU ID (students only)" />
+            <select id="admin-new-role" class="form-select mb-2">
+              <option value="student">Student</option>
+              <option value="ta">Teaching Assistant</option>
+              <option value="teacher">Teacher</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button class="btn uvu-btn btn-sm w-100" id="btn-admin-create-user">Create User</button>
+          </div>
+        </div>
+
+        <!-- TEACHER PANEL -->
+        <div id="section-teacher" class="d-none">
+          <div class="card p-3 mb-3">
+            <h6 class="uvu-text fw-bold mb-3">Create Course</h6>
+            <input id="teacher-course-id" class="form-control mb-2" placeholder="Course ID" />
+            <input id="teacher-course-display" class="form-control mb-2" placeholder="Display Name" />
+            <button class="btn uvu-btn btn-sm w-100" id="btn-teacher-create-course">Create Course</button>
+          </div>
+          <div class="card p-3 mb-3">
+            <h6 class="uvu-text fw-bold mb-3">Create Student / TA</h6>
+            <input id="teacher-new-username" class="form-control mb-2" placeholder="Username" />
+            <input id="teacher-new-password" class="form-control mb-2" placeholder="Password" type="password" />
+            <input id="teacher-new-displayname" class="form-control mb-2" placeholder="Display Name" />
+            <input id="teacher-new-uvuid" class="form-control mb-2" placeholder="UVU ID (students only)" />
+            <select id="teacher-new-role" class="form-select mb-2">
+              <option value="student">Student</option>
+              <option value="ta">Teaching Assistant</option>
+            </select>
+            <button class="btn uvu-btn btn-sm w-100" id="btn-teacher-create-user">Create User</button>
+          </div>
+          <div class="card p-3 mb-3" id="teacher-enroll-panel" style="display:none!important">
+            <h6 class="uvu-text fw-bold mb-3">Add Student to Course</h6>
+            <input id="teacher-add-student-id" class="form-control mb-2" placeholder="Student Person ID" />
+            <button class="btn uvu-btn btn-sm w-100" id="btn-teacher-add-student">Add Student</button>
+          </div>
+        </div>
+
+        <!-- TA PANEL -->
+        <div id="section-ta" class="d-none">
+          <div class="card p-3 mb-3">
+            <h6 class="uvu-text fw-bold mb-3">Create Student</h6>
+            <input id="ta-new-username" class="form-control mb-2" placeholder="Username" />
+            <input id="ta-new-password" class="form-control mb-2" placeholder="Password" type="password" />
+            <input id="ta-new-displayname" class="form-control mb-2" placeholder="Display Name" />
+            <input id="ta-new-uvuid" class="form-control mb-2" placeholder="UVU ID (8 digits)" />
+            <button class="btn uvu-btn btn-sm w-100" id="btn-ta-create-student">Create Student</button>
+          </div>
+        </div>
+
+        <!-- STUDENT PANEL -->
+        <div id="section-student" class="d-none">
+          <div class="card p-3 mb-3">
+            <h6 class="uvu-text fw-bold mb-3">Enroll in a Course</h6>
+            <input id="enroll-course-id" class="form-control mb-2" placeholder="Course ID (e.g. cs4690)" />
+            <button class="btn uvu-btn btn-sm w-100" id="btn-enroll">Enroll</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT PANEL: Courses + Logs -->
+      <div class="col-lg-8">
+
+        <!-- My Courses -->
+        <div class="card p-3 mb-4">
+          <h6 class="uvu-text fw-bold mb-3">My Courses <small class="text-muted fw-normal">(click to view logs)</small></h6>
+          <div id="my-courses"><p class="text-muted mb-0">Loading...</p></div>
+        </div>
+
+        <!-- Logs Section (shown when course selected) -->
+        <div id="logs-section" class="d-none">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="uvu-text fw-bold mb-0">Logs — <span id="logs-course-label" class="text-dark"></span></h6>
+              <button class="btn btn-sm btn-outline-secondary" id="btn-close-logs">✕ Close</button>
+            </div>
+
+            <!-- Filter bar (non-student) -->
+            <div id="log-filter" class="mb-3 d-none">
+              <div class="input-group">
+                <input id="filter-uvuid" class="form-control" placeholder="Filter by UVU ID (optional)" />
+                <button class="btn uvu-btn" id="btn-load-logs">Load</button>
+              </div>
+            </div>
+
+            <div id="logs-list" class="mb-3"></div>
+
+            <!-- Add Log -->
+            <div class="border-top pt-3">
+              <h6 class="fw-semibold mb-2">Add Log Entry</h6>
+              <input id="log-uvuid" class="form-control mb-2" placeholder="Student UVU ID" />
+              <textarea id="log-text" class="form-control mb-2" rows="3" placeholder="Log entry text..."></textarea>
+              <button class="btn uvu-btn btn-sm" id="btn-add-log">Submit Log</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index:9999"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="/js/uvu/dashboard.js" type="module"></script>
+</body>
+</html>
