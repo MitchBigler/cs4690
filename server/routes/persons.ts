@@ -17,4 +17,18 @@ router.get('/', requireAuth, requireUniversity, requireRole('admin', 'teacher', 
   } catch (err) { next(err); }
 });
 
+// DELETE /:university/api/persons/:id  (admin only)
+router.delete('/:id', requireAuth, requireUniversity, requireRole('admin'), async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { university, id } = req.params;
+    if (id === req.session!.userId) {
+      res.status(400).json({ message: 'Cannot delete your own account' });
+      return;
+    }
+    const deleted = await PersonModel.findOneAndDelete({ _id: id, university });
+    if (!deleted) { res.status(404).json({ message: 'Person not found' }); return; }
+    res.json({ message: 'Deleted' });
+  } catch (err) { next(err); }
+});
+
 export default router;

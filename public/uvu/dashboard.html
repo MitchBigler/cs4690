@@ -97,13 +97,33 @@
 
       </div>
 
-      <!-- RIGHT PANEL: Courses + Logs -->
+      <!-- RIGHT PANEL: Courses + Logs + Users -->
       <div class="col-lg-8">
 
         <!-- My Courses -->
         <div class="card p-3 mb-4">
           <h6 class="uvu-text fw-bold mb-3">My Courses <small class="text-muted fw-normal">(click to view logs)</small></h6>
           <div id="my-courses"><p class="text-muted mb-0">Loading...</p></div>
+        </div>
+
+        <!-- Users Panel (admin/teacher/ta) -->
+        <div id="users-panel" class="d-none mb-4">
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="uvu-text fw-bold mb-0">Users</h6>
+              <div class="d-flex gap-2 align-items-center">
+                <select id="user-role-filter" class="form-select form-select-sm" style="width:auto">
+                  <option value="">All roles</option>
+                  <option value="admin">Admin</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="ta">TA</option>
+                  <option value="student">Student</option>
+                </select>
+                <button class="btn uvu-btn btn-sm" id="btn-refresh-users">Refresh</button>
+              </div>
+            </div>
+            <div id="users-list"><p class="text-muted mb-0">Loading...</p></div>
+          </div>
         </div>
 
         <!-- Logs Section (shown when course selected) -->

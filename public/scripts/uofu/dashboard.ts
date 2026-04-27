@@ -70,12 +70,18 @@ function showRoleSections(): void {
   if (role === 'admin') {
     document.getElementById('section-admin')!.classList.remove('d-none');
     document.getElementById('log-filter')!.classList.remove('d-none');
+    document.getElementById('users-panel')!.classList.remove('d-none');
+    loadUsers();
   } else if (role === 'teacher') {
     document.getElementById('section-teacher')!.classList.remove('d-none');
     document.getElementById('log-filter')!.classList.remove('d-none');
+    document.getElementById('users-panel')!.classList.remove('d-none');
+    loadUsers();
   } else if (role === 'ta') {
     document.getElementById('section-ta')!.classList.remove('d-none');
     document.getElementById('log-filter')!.classList.remove('d-none');
+    document.getElementById('users-panel')!.classList.remove('d-none');
+    loadUsers();
   } else {
     document.getElementById('section-student')!.classList.remove('d-none');
   }
@@ -164,8 +170,49 @@ async function editLog(logId: string, uvuId: string, currentText: string): Promi
 
 async function createUser(username: string, password: string, displayName: string, uvuId: string, role: string): Promise<void> {
   const res = await api('POST', '/signup', { username, password, displayName, uvuId, role });
-  if (res.ok) showToast(`${role.charAt(0).toUpperCase() + role.slice(1)} created`);
+  if (res.ok) { showToast(`${role.charAt(0).toUpperCase() + role.slice(1)} created`); await loadUsers(); }
   else { const d = await res.json(); showToast(d.message || 'Failed to create user', 'danger'); }
+}
+
+async function loadUsers(): Promise<void> {
+  const container = document.getElementById('users-list')!;
+  const roleFilter = (document.getElementById('user-role-filter') as HTMLSelectElement)?.value || '';
+  try {
+    const res = await api('GET', '/persons');
+    let persons: { _id: string; username: string; role: string; displayName?: string; uvuId?: string }[] = await res.json();
+    if (roleFilter) persons = persons.filter(p => p.role === roleFilter);
+    if (persons.length === 0) { container.innerHTML = '<p class="text-muted mb-0">No users found.</p>'; return; }
+    container.innerHTML = `
+      <table class="table table-sm table-hover mb-0">
+        <thead><tr>
+          <th>Username</th><th>Display Name</th><th>Role</th><th>ID</th>
+          ${currentUser?.role === 'admin' ? '<th></th>' : ''}
+        </tr></thead>
+        <tbody>${persons.map(p => `
+          <tr>
+            <td class="fw-semibold">${p.username}</td>
+            <td>${p.displayName || '—'}</td>
+            <td><span class="badge bg-secondary">${p.role}</span></td>
+            <td class="text-muted small">${p.uvuId || '—'}</td>
+            ${currentUser?.role === 'admin' && p._id !== currentUser.userId ? `
+              <td><button class="btn btn-sm btn-outline-danger py-0" data-delete-id="${p._id}" data-delete-name="${p.username}">Delete</button></td>
+            ` : '<td></td>'}
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+    container.querySelectorAll<HTMLElement>('[data-delete-id]').forEach(btn => {
+      btn.addEventListener('click', () => deleteUser(btn.dataset.deleteId!, btn.dataset.deleteName!));
+    });
+  } catch {
+    container.innerHTML = '<p class="text-danger mb-0">Failed to load users.</p>';
+  }
+}
+
+async function deleteUser(id: string, username: string): Promise<void> {
+  if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
+  const res = await api('DELETE', `/persons/${id}`);
+  if (res.ok) { showToast(`Deleted ${username}`); await loadUsers(); }
+  else { const d = await res.json(); showToast(d.message || 'Delete failed', 'danger'); }
 }
 
 // Logout
@@ -253,6 +300,10 @@ document.getElementById('btn-enroll')?.addEventListener('click', async () => {
   if (res.ok) { showToast('Enrolled successfully!'); await loadMyCourses(); }
   else { const d = await res.json(); showToast(d.message || 'Enrollment failed', 'danger'); }
 });
+
+// Refresh users list
+document.getElementById('btn-refresh-users')?.addEventListener('click', loadUsers);
+document.getElementById('user-role-filter')?.addEventListener('change', loadUsers);
 
 // Boot
 loadSession();

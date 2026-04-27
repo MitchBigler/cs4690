@@ -29,7 +29,7 @@ export function createApp(mongoUri: string): Express {
   // Static files per university (served before API routes so HTML/CSS/JS load correctly)
   app.use('/uvu',  express.static(path.join(__dirname, '../public/uvu')));
   app.use('/uofu', express.static(path.join(__dirname, '../public/uofu')));
-  app.use(express.static(path.join(__dirname, '../public')));
+  app.use(express.static(path.join(__dirname, '../public'), { index: false }));
 
   // HTML page routes
   app.get('/uvu/login',     (_req, res) => res.sendFile(path.resolve(__dirname, '../public/uvu/login.html')));
